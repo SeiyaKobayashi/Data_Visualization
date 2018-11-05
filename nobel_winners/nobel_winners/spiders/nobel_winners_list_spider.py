@@ -18,6 +18,7 @@ class NobelWinnerItem(scrapy.Item):
     place_of_death = scrapy.Field()
     text = scrapy.Field()
 
+# Scraping flow: list Page -> individual's Page -> corresponding Wikidata page
 class NobelWinnerSpider(scrapy.Spider):
     name = 'nobelwinners_list'
     allowed_domains = ['en.wikipedia.org']
@@ -41,6 +42,7 @@ class NobelWinnerSpider(scrapy.Spider):
                     request.meta['item'] = NobelWinnerItem(**winner_data)
                     yield request
 
+    # Parse individual's wikipedia page (i.e. bio)
     def parse_bio(self, response):
         item = response.meta['item']
         href = response.xpath('//li[@id="t-wikibase"]/a/@href').extract()
@@ -52,7 +54,7 @@ class NobelWinnerSpider(scrapy.Spider):
             request.meta['item'] = item
             yield request
 
-    # Parse all required data from Wikidata
+    # Parse gender, date_of_birth, date_of_death, place_of_birth and place_of_death fields from Wikidata
     def parse_wikidata(self, response):
         item = response.meta['item']
         property_codes = [
@@ -62,19 +64,19 @@ class NobelWinnerSpider(scrapy.Spider):
             {'name':'place_of_birth','code': 'P19', 'link':True},
             {'name':'place_of_birth','code': 'P20', 'link':True}
         ]
-        p_template = '//*[@id="{code}"]/div[2]/div[1]/div/div[2]/div[2]/div[1]{link_html}/text()'
+        p_temp = '//*[@id="{code}"]/div[2]/div[1]/div/div[2]/div/div[1]/div[2]/div[2]/div[1]{link_html}/text()'
 
         for prop in property_codes:
             link_html = ''
             if prop.get('link'):
                 link_html = '/a'
-            sel = response.xpath(p_template.format(code=prop['code'], link_html=link_html))
-            print(sel)
+            sel = response.xpath(p_temp.format(code=prop['code'], link_html=link_html))
             if sel:
                 item[prop['name']] = sel[0].extract()
 
         yield item
 
+# Process name, link, year, category, country and born_in fields
 def process_winner_li(w, country=None):
     wdata = {}
     wdata['link'] = BASE_URL + w.xpath('a/@href').extract()[0]
