@@ -3,7 +3,7 @@ import requests
 import requests_cache
 
 # Create cache for scraping
-requests_cache.install_cache('nodel_pages', backend='sqlite', expire_after=3600)
+requests_cache.install_cache('nobel_pages', backend='sqlite', expire_after=3600)
 
 # Define HEADERS to avoid rejection of requests from Wikipedia
 BASE_URL = "https://en.wikipedia.org"
