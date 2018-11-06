@@ -16,6 +16,8 @@ SPIDER_MODULES = ['nobel_winners.spiders']
 NEWSPIDER_MODULE = 'nobel_winners.spiders'
 
 HTTPCACHE_ENABLED = True
+ITEM_PIPELINES = {'nobel_winners.pipelines.NobelImagesPipeline':1}
+IMAGES_STORE = 'images'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'nobel_winners (+http://www.yourdomain.com)'
