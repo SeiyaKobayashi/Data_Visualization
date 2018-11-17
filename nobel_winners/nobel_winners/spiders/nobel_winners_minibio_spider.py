@@ -43,7 +43,7 @@ class NobelWinnerSpiderBio(scrapy.Spider):
     def parse_mini_bio(self, response):
         BASE_URL_ESCAPED = 'http:\/\/en.wikipedia.org'
         item = response.meta['item']
-
+        
         item['image_urls'] = []
         img_src = response.xpath('//table[contains(@class, "infobox")]//img/@src')
         if img_src:
